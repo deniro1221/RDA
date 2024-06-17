@@ -100,7 +100,7 @@ public class UnosProizvodNN extends JDialog {
 			                    Connection conn = DriverManager.getConnection(
 			                            "jdbc:mysql://ucka.veleri.hr:3306/dsubasic", "dsubasic", "11");
 
-			                    String sql = "INSERT INTO PROIZVOD (Sifra_narudzbe, Sifra_proizvoda, Kolicina_narucenog_proizvoda) VALUES (?, ?, ?)";
+			                    String sql = "INSERT INTO PROIZVOD_NA_NARUDZBI (Sifra_narudzbe, Sifra_proizvoda, Kolicina_narucenog_proizvoda) VALUES (?, ?, ?)";
 			                    PreparedStatement stmt = conn.prepareStatement(sql);
 			                    stmt.setString(1, sifraNarudzbe);
 			                    stmt.setString(2, sifraProizvoda);
@@ -135,3 +135,4 @@ public class UnosProizvodNN extends JDialog {
 		}
 	}
 }
+
