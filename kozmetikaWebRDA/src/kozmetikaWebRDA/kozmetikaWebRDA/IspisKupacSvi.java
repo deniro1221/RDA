@@ -1,0 +1,100 @@
+package kozmetikaWebRDA.kozmetikaWebRDA;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import java.awt.Color;
+import java.awt.Font;
+
+public class IspisKupacSvi extends JDialog {
+
+    private static final long serialVersionUID = 1L;
+    private final JPanel contentPanel = new JPanel();
+
+    /**
+     * Launch the application.
+     */
+    public static void main(String[] args) {
+        try {
+            IspisKupacSvi dialog = new IspisKupacSvi();
+            dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            dialog.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Create the dialog.
+     */
+    public IspisKupacSvi() {
+        setBounds(100, 100, 450, 300);
+        getContentPane().setLayout(new BorderLayout());
+        contentPanel.setBackground(new Color(128, 255, 255));
+        contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        getContentPane().add(contentPanel, BorderLayout.CENTER);
+        contentPanel.setLayout(null);
+
+        {
+            JLabel lblNewLabel = new JLabel("Ispiši sve kupce");
+            lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
+            lblNewLabel.setBounds(144, 10, 160, 15);
+            contentPanel.add(lblNewLabel);
+        }
+
+        {
+            JPanel buttonPane = new JPanel();
+            buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+            getContentPane().add(buttonPane, BorderLayout.SOUTH);
+            {
+                JButton okButton = new JButton("OK");
+                okButton.setActionCommand("OK");
+                buttonPane.add(okButton);
+                okButton.addActionListener(e -> dispose());
+            }
+        }
+
+        // Call method to display all customers
+        prikaziSveKupce();
+    }
+
+    private void prikaziSveKupce() {
+        String url = "jdbc:mysql://ucka.veleri.hr:3306/dsubasic";
+        String korisnickoIme = "dsubasic";
+        String lozinka = "11";
+
+        String query = "SELECT Ime_kupca, Prezime_kupca, E_mail FROM KUPAC";
+
+        try (Connection connection = DriverManager.getConnection(url, korisnickoIme, lozinka);
+             PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet rs = statement.executeQuery();
+            
+            int yOffset = 50; // Initial offset for labels
+            while (rs.next()) {
+                String imeKupca = rs.getString("Ime_kupca");
+                String prezimeKupca = rs.getString("Prezime_kupca");
+                String emailKupca = rs.getString("E_mail");
+
+                JLabel lblKupac = new JLabel("Ime: " + imeKupca + ", Prezime: " + prezimeKupca + ", E-mail: " + emailKupca);
+                lblKupac.setFont(new Font("Tahoma", Font.PLAIN, 12));
+                lblKupac.setBounds(29, yOffset, 350, 13);
+                contentPanel.add(lblKupac);
+                yOffset += 20; // Adjust yOffset for the next label
+            }
+            
+            contentPanel.revalidate();
+            contentPanel.repaint();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}

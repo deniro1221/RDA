@@ -108,7 +108,6 @@ public class MenuAdmin extends JDialog {
 		btnApi.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnApi.setBounds(133, 179, 119, 30);
 		contentPanel.add(btnApi);
-<<<<<<< HEAD
 		
 		JButton btnNewButton_1 = new JButton("Novi");
 		btnNewButton_1.addActionListener(new ActionListener() {
@@ -119,8 +118,6 @@ public class MenuAdmin extends JDialog {
 		});
 		btnNewButton_1.setBounds(304, 184, 89, 23);
 		contentPanel.add(btnNewButton_1);
-=======
->>>>>>> branch 'main' of https://github.com/deniro1221/RDA.git
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));

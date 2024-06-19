@@ -15,6 +15,8 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class IspisKupac extends JDialog {
 
@@ -82,6 +84,16 @@ public class IspisKupac extends JDialog {
         lblEmailKupca.setFont(new Font("Tahoma", Font.PLAIN, 12));
         lblEmailKupca.setBounds(29, 160, 350, 13);
         contentPanel.add(lblEmailKupca);
+        
+        JButton btnNewButton = new JButton("Svi");
+        btnNewButton.setBounds(275, 6, 105, 27);
+        contentPanel.add(btnNewButton);
+        btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				IspisKupacSvi dlg=new IspisKupacSvi();
+				dlg.setVisible(true);
+			}
+		});
 
         {
             JPanel buttonPane = new JPanel();
