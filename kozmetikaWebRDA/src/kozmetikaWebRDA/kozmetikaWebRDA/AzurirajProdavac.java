@@ -8,6 +8,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import java.sql.ResultSet;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import java.awt.event.ActionListener;
@@ -114,61 +117,81 @@ public class AzurirajProdavac extends JDialog {
         okButton.setActionCommand("OK");
         buttonPane.add(okButton);
         getRootPane().setDefaultButton(okButton);
-
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int staraSifra = Integer.parseInt(textFieldStaraSifra.getText());
-                int novaSifra = Integer.parseInt(textFieldNovaSifra.getText());
+                String staraSifraStr = textFieldStaraSifra.getText();
+                String novaSifraStr = textFieldNovaSifra.getText();
                 String ime = textFieldIme.getText();
                 String adresa = textFieldAdresa.getText();
                 String email = textFieldEmail.getText();
-                
-                sacuvajUBazi(staraSifra, novaSifra, ime, adresa, email);
-                dispose();
-            }
-        });
-
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.setActionCommand("Cancel");
-        buttonPane.add(cancelButton);
-
-        // Add ActionListener to cancelButton
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                dispose();
+              
+                if (ime.isEmpty() || adresa.isEmpty() || email.isEmpty() || novaSifraStr.isEmpty() || staraSifraStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Sva polja moraju uredno biti popunjena.", "Greška", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    try {
+                       
+                        int staraSifra = Integer.parseInt(staraSifraStr);
+                        int novaSifra = Integer.parseInt(novaSifraStr);
+                        
+                       
+                        sacuvajUBazi(staraSifra, novaSifra, ime, adresa, email);
+                        dispose();
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, "Molimo unesite važeće numeričke vrijednosti.", "Greška", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
             }
         });
     }
-    
+
     private void sacuvajUBazi(int staraSifra, int novaSifra, String ime, String adresa, String email) {
         String url = "jdbc:mysql://ucka.veleri.hr:3306/dsubasic";
         String korisnickoIme = "dsubasic";
         String lozinka = "11";
         
-        String query = "UPDATE PRODAVAC SET Sifra_prodavaca = ?, Ime_prodavaca = ?, Adresa_prodavaca = ?, E_mail_prodavaca = ? WHERE Sifra_prodavaca = ?";
+       
+        String checkQuery = "SELECT COUNT(*) FROM PRODAVAC WHERE Sifra_prodavaca = ?";
+        
+        
+        String updateQuery = "UPDATE PRODAVAC SET Sifra_prodavaca = ?, Ime_prodavaca = ?, Adresa_prodavaca = ?, E_mail_prodavaca = ? WHERE Sifra_prodavaca = ?";
         
         try (Connection connection = DriverManager.getConnection(url, korisnickoIme, lozinka);
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement checkStatement = connection.prepareStatement(checkQuery);
+             PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
             
+         
+            checkStatement.setInt(1, staraSifra);
             
-            preparedStatement.setInt(1, novaSifra);
-            preparedStatement.setString(2, ime);
-            preparedStatement.setString(3, adresa);
-            preparedStatement.setString(4, email);
-            preparedStatement.setInt(5, staraSifra);
+           
+            ResultSet resultSet = checkStatement.executeQuery();
+            resultSet.next();
+            int count = resultSet.getInt(1);
             
-            int rowsUpdated = preparedStatement.executeUpdate();
-            
- 
-            if (rowsUpdated > 0) {
-                System.out.println("Podaci prodavača su uspješno ažurirani.");
-            } else {
-                System.out.println("Ažuriranje podataka nije uspjelo. Provjerite šifru prodavača.");
+          
+            if (count == 0) {
+                JOptionPane.showMessageDialog(this, "Šifra prodavača ne postoji u bazi. Ažuriranje nije moguće.", "Greška", JOptionPane.ERROR_MESSAGE);
+                return; 
             }
             
+            
+            updateStatement.setInt(1, novaSifra);
+            updateStatement.setString(2, ime);
+            updateStatement.setString(3, adresa);
+            updateStatement.setString(4, email);
+            updateStatement.setInt(5, staraSifra);
+            
+           
+            int rowsUpdated = updateStatement.executeUpdate();
+
+            
+            if (rowsUpdated > 0) {
+                JOptionPane.showMessageDialog(this, "Podaci prodavača su uspješno ažurirani.", "Uspjeh", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Ažuriranje podataka nije uspjelo. Provjerite šifru prodavača.", "Greška", JOptionPane.ERROR_MESSAGE);
+            }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
-            System.out.println("Greška pri radu s bazom podataka: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Greška pri radu s bazom podataka: " + ex.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
         }
-    }
-}
+    }}
