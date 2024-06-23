@@ -1,4 +1,5 @@
-package kozmetikaWebRDA.kozmetikaWebRDA
+package src.kozmetikaWebRDA.kozmetikaWebRDA;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -116,25 +117,36 @@ public class PrilagodiAzuriranje extends JDialog {
     }
 
     private void azurirajVrijednost() {
-        String tablica = textFieldTablica.getText();
-        String primarniKljuc = textFieldPrimarniKljuc.getText();
-        String stupac = textFieldStupac.getText();
-        String novaVrijednost = textFieldNovaVrijednost.getText();
+        String tablica = textFieldTablica.getText().trim();
+        String primarniKljuc = textFieldPrimarniKljuc.getText().trim();
+        String stupac = textFieldStupac.getText().trim();
+        String novaVrijednost = textFieldNovaVrijednost.getText().trim();
 
-        // Konstruiraj SQL upit za ažuriranje samo jednog redka
-        String updateQuery = "UPDATE " + tablica + " SET " + stupac + " = ? WHERE " + primarniKljuc + " = ?";
+        String updateQuery = "";
+        
+        // Provjera imena tablice uz case-insensitive usporedbu
+        if (tablica.equalsIgnoreCase("KUPAC")) {
+            updateQuery = "UPDATE KUPAC SET " + stupac + " = ? WHERE Sifra_kupca = ?";
+        } else if (tablica.equalsIgnoreCase("PROIZVOD")) {
+            updateQuery = "UPDATE PROIZVOD SET " + stupac + " = ? WHERE Sifra_proizvoda = ?";
+        } else if (tablica.equalsIgnoreCase("NARUDZBA")) {
+            updateQuery = "UPDATE NARUDZBA SET " + stupac + " = ? WHERE Sifra_narudzbe = ?";
+        } else if (tablica.equalsIgnoreCase("PRODAVAC")) {
+            updateQuery = "UPDATE PRODAVAC SET " + stupac + " = ? WHERE Sifra_prodavaca = ?";
+        } else {
+            
+            JOptionPane.showMessageDialog(this, "Nepodržana tablica: " + tablica, "Greška", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://ucka.veleri.hr:3306/dsubasic", "dsubasic", "11");
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
-            // Postavi parametre upita
-            preparedStatement.setString(1, novaVrijednost); // Nova vrijednost koju želite postaviti
-            preparedStatement.setString(2, textFieldPrimarniKljuc.getText()); // Vrijednost primarnog ključa za odabir redaka
+            preparedStatement.setString(1, novaVrijednost); 
+            preparedStatement.setString(2, primarniKljuc); 
 
-            // Izvrši upit za ažuriranje
             int rowsUpdated = preparedStatement.executeUpdate();
 
-            // Provjeri broj ažuriranih redaka i obavijesti korisnika
             if (rowsUpdated > 0) {
                 JOptionPane.showMessageDialog(this, "Podaci su uspješno ažurirani.", "Uspjeh", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -145,5 +157,4 @@ public class PrilagodiAzuriranje extends JDialog {
             JOptionPane.showMessageDialog(this, "Greška pri radu s bazom podataka: " + ex.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
-    }
-}
+    }}

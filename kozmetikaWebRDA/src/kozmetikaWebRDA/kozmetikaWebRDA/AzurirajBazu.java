@@ -1,4 +1,4 @@
-package kozmetikaWebRDA.kozmetikaWebRDA;
+package src.kozmetikaWebRDA.kozmetikaWebRDA;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -97,8 +97,14 @@ public class AzurirajBazu extends JDialog {
 		contentPanel.add(btnNarudba);
 		
 		JButton btnProizvod_1_1 = new JButton("PRILAGAOĐENO ");
+		btnProizvod_1_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PrilagodiAzuriranje dlg= new PrilagodiAzuriranje();
+				dlg.setVisible(true);
+			}
+		});
 		btnProizvod_1_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnProizvod_1_1.setBounds(39, 176, 142, 21);
+		btnProizvod_1_1.setBounds(136, 174, 142, 21);
 		contentPanel.add(btnProizvod_1_1);
 		{
 			JPanel buttonPane = new JPanel();
