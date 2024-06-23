@@ -20,8 +20,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.swing.JOptionPane;
+import java.sql.ResultSet;
 
 public class AzurirajNarudzba extends JDialog {
 
@@ -155,7 +155,7 @@ public class AzurirajNarudzba extends JDialog {
             sacuvajUBazi(staraSifra, novaSifra, datumBaza, cijena, nacinPlacanja);
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Neispravan format šifre ili cijene.", "Greška", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Neispravan format šifre ili cijene, također provjerite jesu li sva polja unesena.", "Greška", JOptionPane.ERROR_MESSAGE);
         } catch (ParseException e) {
             JOptionPane.showMessageDialog(this, "Neispravan format datuma. Očekivani format je ddMMyyyy.", "Greška", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
@@ -168,18 +168,30 @@ public class AzurirajNarudzba extends JDialog {
         String korisnickoIme = "dsubasic";
         String lozinka = "11";
 
-        String query = "UPDATE NARUDZBA SET Sifra_narudzbe = ?, Datum_narudzbe = ?, Cijena_narudzbe = ?, Nacin_placanja = ? WHERE Sifra_narudzbe = ?";
+        String checkquery = "SELECT COUNT(*) FROM NARUDZBA WHERE Sifra_narudzbe = ?";
+        String updatequery = "UPDATE NARUDZBA SET Sifra_narudzbe = ?, Datum_narudzbe = ?, Nacin_placanja = ?, Cijena_narudzbe = ? WHERE Sifra_narudzbe = ?";
 
         try (Connection connection = DriverManager.getConnection(url, korisnickoIme, lozinka);
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement checkStatement = connection.prepareStatement(checkquery);
+             PreparedStatement updateStatement = connection.prepareStatement(updatequery)) {
 
-            preparedStatement.setInt(1, novaSifra);
-            preparedStatement.setString(2, datum);
-            preparedStatement.setDouble(3, cijena);
-            preparedStatement.setString(4, nacinPlacanja);
-            preparedStatement.setInt(5, staraSifra);
+            checkStatement.setInt(1, staraSifra);
+            ResultSet resultSet = checkStatement.executeQuery();
+            resultSet.next();
+            int count = resultSet.getInt(1);
 
-            int rowsUpdated = preparedStatement.executeUpdate();
+            if (count == 0) {
+                JOptionPane.showMessageDialog(this, "Šifra narudžbe ne postoji u bazi. Ažuriranje nije moguće.", "Greška", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            updateStatement.setInt(1, novaSifra);
+            updateStatement.setString(2, datum);
+            updateStatement.setString(3, nacinPlacanja); 
+            updateStatement.setDouble(4, cijena); 
+            updateStatement.setInt(5, staraSifra);
+
+            int rowsUpdated = updateStatement.executeUpdate();
 
             if (rowsUpdated > 0) {
                 JOptionPane.showMessageDialog(this, "Podaci narudžbe su uspješno ažurirani.", "Uspjeh", JOptionPane.INFORMATION_MESSAGE);
@@ -190,5 +202,4 @@ public class AzurirajNarudzba extends JDialog {
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Greška pri radu s bazom podataka: " + ex.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
         }
-    }
-}
+    }}

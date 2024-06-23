@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -46,7 +47,7 @@ public class AzurirajKupac extends JDialog {
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         contentPanel.setLayout(null);
 
-        JLabel lblNaslov = new JLabel("Azuriranje kupca");
+        JLabel lblNaslov = new JLabel("Ažuriranje kupca");
         lblNaslov.setFont(new Font("Tahoma", Font.PLAIN, 17));
         lblNaslov.setBounds(126, 23, 179, 26);
         contentPanel.add(lblNaslov);
@@ -109,24 +110,26 @@ public class AzurirajKupac extends JDialog {
         okButton.setActionCommand("OK");
         buttonPane.add(okButton);
         getRootPane().setDefaultButton(okButton);
-
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                try {
-                    int staraSifra = Integer.parseInt(textFieldStaraSifra.getText());
-                    int novaSifra = Integer.parseInt(textFieldNovaSifra.getText());
-                    String ime = textFieldIme.getText();
-                    String prezime = textFieldPrezime.getText();
-                    String email = textFieldEmail.getText();
+                String staraSifraStr = textFieldStaraSifra.getText();
+                String novaSifraStr = textFieldNovaSifra.getText();
+                String ime = textFieldIme.getText();
+                String prezime = textFieldPrezime.getText();
+                String email = textFieldEmail.getText();
 
-                    if (textFieldStaraSifra.getText().isEmpty() || textFieldNovaSifra.getText().isEmpty() || ime.isEmpty() || prezime.isEmpty() || email.isEmpty()) {
-                        JOptionPane.showMessageDialog(null, "Sva polja moraju biti popunjena.", "Greška", JOptionPane.ERROR_MESSAGE);
-                    } else {
+                if (ime.isEmpty() || prezime.isEmpty() || email.isEmpty() || novaSifraStr.isEmpty() || staraSifraStr.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Sva polja moraju uredno biti popunjena.", "Greška", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    try {
+                        int staraSifra = Integer.parseInt(staraSifraStr);
+                        int novaSifra = Integer.parseInt(novaSifraStr);
+
                         sacuvajUBazi(staraSifra, novaSifra, ime, prezime, email);
                         dispose();
+                    } catch (NumberFormatException ex) {
+                        JOptionPane.showMessageDialog(null, "Molimo unesite važeće numeričke vrijednosti za šifre.", "Greška", JOptionPane.ERROR_MESSAGE);
                     }
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(null, "Šifre moraju biti cijeli brojevi.", "Greška", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -146,18 +149,31 @@ public class AzurirajKupac extends JDialog {
         String korisnickoIme = "dsubasic";
         String lozinka = "11";
 
-        String query = "UPDATE KUPAC SET Sifra_kupca = ?, Ime_kupca = ?, Prezime_kupca = ?, E_mail= ? WHERE Sifra_kupca = ?";
+        String checkquery = "SELECT COUNT(*) FROM KUPAC WHERE Sifra_kupca = ?";
+        String updatequery = "UPDATE KUPAC SET Sifra_kupca = ?, Ime_kupca = ?, Prezime_kupca = ?, E_mail = ? WHERE Sifra_kupca = ?";
 
         try (Connection connection = DriverManager.getConnection(url, korisnickoIme, lozinka);
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement checkStatement = connection.prepareStatement(checkquery);
+             PreparedStatement updateStatement = connection.prepareStatement(updatequery)) {
 
-            preparedStatement.setInt(1, novaSifra);
-            preparedStatement.setString(2, ime);
-            preparedStatement.setString(3, prezime);
-            preparedStatement.setString(4, email);
-            preparedStatement.setInt(5, staraSifra);
+            checkStatement.setInt(1, staraSifra);
 
-            int rowsUpdated = preparedStatement.executeUpdate();
+            ResultSet resultSet = checkStatement.executeQuery();
+            resultSet.next();
+            int count = resultSet.getInt(1);
+
+            if (count == 0) {
+                JOptionPane.showMessageDialog(this, "Šifra kupca ne postoji u bazi. Ažuriranje nije moguće.", "Greška", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            updateStatement.setInt(1, novaSifra);
+            updateStatement.setString(2, ime);
+            updateStatement.setString(3, prezime);
+            updateStatement.setString(4, email);
+            updateStatement.setInt(5, staraSifra);
+
+            int rowsUpdated = updateStatement.executeUpdate();
             if (rowsUpdated > 0) {
                 JOptionPane.showMessageDialog(null, "Kupac je uspješno ažuriran.");
             } else {
