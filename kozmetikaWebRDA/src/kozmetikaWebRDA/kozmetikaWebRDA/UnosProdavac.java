@@ -107,7 +107,13 @@ public class UnosProdavac extends JDialog {
                 String imeProdavaca = textField_1.getText();
                 String adresaProdavaca = textField_2.getText();
                 String emailProdavaca = textField_3.getText();  
-                
+
+                // Validate if any field is empty
+                if (sifraProdavaca.isEmpty() || imeProdavaca.isEmpty() || adresaProdavaca.isEmpty() || emailProdavaca.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Sva polja moraju biti popunjena.", "Greška", JOptionPane.ERROR_MESSAGE);
+                    return; // Exit method early if validation fails
+                }
+
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
                     Connection conn = DriverManager.getConnection(
@@ -119,7 +125,7 @@ public class UnosProdavac extends JDialog {
                     stmt.setString(2, imeProdavaca);
                     stmt.setString(3, adresaProdavaca);
                     stmt.setString(4, emailProdavaca); 
-                   
+
                     stmt.executeUpdate();
                     conn.close();
 
@@ -140,10 +146,17 @@ public class UnosProdavac extends JDialog {
         
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setActionCommand("Cancel");
-        cancelButton.addActionListener(e -> dispose());
-
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+            }
+        });
         buttonPane.add(cancelButton);
+
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setResizable(false);
+        setLocationRelativeTo(null);
+        setTitle("Unos prodavača");
+        setSize(400, 300);
     }
-
 }
-
