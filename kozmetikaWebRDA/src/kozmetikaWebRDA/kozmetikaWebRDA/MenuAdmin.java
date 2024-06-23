@@ -108,16 +108,6 @@ public class MenuAdmin extends JDialog {
 		btnApi.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnApi.setBounds(133, 179, 119, 30);
 		contentPanel.add(btnApi);
-		
-		JButton btnNewButton_1 = new JButton("Novi");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				novi dlg= new novi();
-				dlg.setVisible(true);
-			}
-		});
-		btnNewButton_1.setBounds(304, 184, 89, 23);
-		contentPanel.add(btnNewButton_1);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
