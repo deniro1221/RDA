@@ -55,7 +55,7 @@ public class AzurirajBazu extends JDialog {
 			}
 		});
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnNewButton.setBounds(39, 69, 113, 21);
+		btnNewButton.setBounds(39, 69, 142, 21);
 		contentPanel.add(btnNewButton);
 		
 		JButton btnProizvod = new JButton("PROIZVOD");
@@ -67,7 +67,7 @@ public class AzurirajBazu extends JDialog {
 			}
 		});
 		btnProizvod.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnProizvod.setBounds(256, 69, 126, 21);
+		btnProizvod.setBounds(239, 69, 142, 21);
 		contentPanel.add(btnProizvod);
 		
 		JButton btnProizvod_1 = new JButton("PRODAVAČ");
@@ -79,7 +79,7 @@ public class AzurirajBazu extends JDialog {
 			}
 		});
 		btnProizvod_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnProizvod_1.setBounds(39, 130, 113, 21);
+		btnProizvod_1.setBounds(39, 130, 142, 21);
 		contentPanel.add(btnProizvod_1);
 		
 		JButton btnNarudba = new JButton("NARUDŽBA");
@@ -93,8 +93,13 @@ public class AzurirajBazu extends JDialog {
 			}
 		});
 		btnNarudba.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnNarudba.setBounds(256, 131, 126, 21);
+		btnNarudba.setBounds(239, 131, 143, 21);
 		contentPanel.add(btnNarudba);
+		
+		JButton btnProizvod_1_1 = new JButton("PRILAGAOĐENO ");
+		btnProizvod_1_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		btnProizvod_1_1.setBounds(39, 176, 142, 21);
+		contentPanel.add(btnProizvod_1_1);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
