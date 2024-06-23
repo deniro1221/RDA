@@ -1,4 +1,4 @@
-package kozmetikaWebRDA.kozmetikaWebRDA;
+package src.kozmetikaWebRDA.kozmetikaWebRDA;
 
 import java.awt.EventQueue;
 
@@ -112,8 +112,19 @@ public class UnosBaza extends JFrame {
         btnIzlaz.addActionListener(e -> dispose());
 
 		btnIzlaz.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnIzlaz.setBounds(168, 209, 93, 30);
+		btnIzlaz.setBounds(333, 223, 93, 30);
 		contentPane.add(btnIzlaz);
+		
+		JButton btnKreirajTablicu = new JButton("KREIRAJ TABLICU");
+		btnKreirajTablicu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				KreirajTablicu dlg=new KreirajTablicu ();
+				dlg.setVisible(true);
+						
+			}
+		});
+		btnKreirajTablicu.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		btnKreirajTablicu.setBounds(160, 188, 132, 30);
+		contentPane.add(btnKreirajTablicu);
 	}
-
 }
