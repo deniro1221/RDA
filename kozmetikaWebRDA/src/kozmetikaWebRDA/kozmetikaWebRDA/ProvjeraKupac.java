@@ -28,7 +28,7 @@ public class ProvjeraKupac extends JDialog {
      */
     public static void main(String[] args) {
         try {
-            StornoKupca dialog = new StornoKupca();
+            ProvjeraKupac dialog = new ProvjeraKupac();
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
@@ -105,6 +105,26 @@ public class ProvjeraKupac extends JDialog {
                     connection.rollback(); 
                     return;
                 }
+            }
+
+            // Check if the customer exists before attempting to delete
+            String provjeraKupcaQuery = "SELECT * FROM KUPAC WHERE Sifra_kupca = ?";
+            try (PreparedStatement provjeraKupcaStmt = connection.prepareStatement(provjeraKupcaQuery)) {
+                provjeraKupcaStmt.setString(1, sifraKupca);
+                ResultSet resultSet = provjeraKupcaStmt.executeQuery();
+                
+                if (!resultSet.next()) {
+                    JOptionPane.showMessageDialog(this, "Kupac s ovom šifrom ne postoji.", "Greška", JOptionPane.ERROR_MESSAGE);
+                    connection.rollback();
+                    return;
+                }
+            }
+
+            // Confirm deletion
+            int response = JOptionPane.showConfirmDialog(this, "Kupac je pronađen. Želite li ga obrisati?", "Potvrda", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+                connection.rollback();
+                return;
             }
 
             try (PreparedStatement brisanjeStmt = connection.prepareStatement(brisanjeQuery)) {
