@@ -9,13 +9,15 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Font;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StornirajProizvod extends JDialog {
+public class ProvjeraProizvod extends JDialog {
 
     private static final long serialVersionUID = 1L;
     private final JPanel contentPanel = new JPanel();
@@ -37,7 +39,7 @@ public class StornirajProizvod extends JDialog {
     /**
      * Create the dialog.
      */
-    public StornirajProizvod() {
+    public ProvjeraProizvod() {
         setBounds(100, 100, 450, 200);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBackground(new Color(128, 255, 255));
@@ -68,10 +70,9 @@ public class StornirajProizvod extends JDialog {
         okButton.addActionListener(e -> {
             String sifraProizvoda = textField.getText();
             if (!sifraProizvoda.isEmpty()) {
-                stornirajProizvod(sifraProizvoda);
-                dispose();
+                provjeriProizvod(sifraProizvoda);
             } else {
-                System.out.println("Molimo unesite šifru proizvoda.");
+                JOptionPane.showMessageDialog(this, "Molimo unesite šifru proizvoda.", "Greška", JOptionPane.ERROR_MESSAGE);
             }
         });
         okButton.setActionCommand("OK");
@@ -80,34 +81,60 @@ public class StornirajProizvod extends JDialog {
         
         JButton cancelButton = new JButton("Cancel");
         cancelButton.setActionCommand("Cancel");
-        buttonPane.add(cancelButton);                cancelButton.addActionListener(e -> dispose());
-
-        
-
+        buttonPane.add(cancelButton);
+        cancelButton.addActionListener(e -> dispose());
     }
     
+    private void provjeriProizvod(String sifraProizvoda) {
+        String url = "jdbc:mysql://ucka.veleri.hr:3306/dsubasic";
+        String korisnickoIme = "dsubasic";
+        String lozinka = "11";
+        
+        String provjeraQuery = "SELECT 1 FROM PROIZVOD WHERE Sifra_proizvoda = ?";
+        
+        try (Connection connection = DriverManager.getConnection(url, korisnickoIme, lozinka);
+             PreparedStatement provjeraStmt = connection.prepareStatement(provjeraQuery)) {
+            
+            provjeraStmt.setString(1, sifraProizvoda);
+            ResultSet resultSet = provjeraStmt.executeQuery();
+            
+            if (resultSet.next()) {
+                int response = JOptionPane.showConfirmDialog(this, "Proizvod pronađen. Želite li ga obrisati?", "Potvrda", JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.YES_OPTION) {
+                    stornirajProizvod(sifraProizvoda);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Proizvod nije pronađen. Provjerite šifru proizvoda.", "Greška", JOptionPane.ERROR_MESSAGE);
+            }
+            
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Greška pri radu s bazom podataka: " + ex.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     private void stornirajProizvod(String sifraProizvoda) {
         String url = "jdbc:mysql://ucka.veleri.hr:3306/dsubasic";
         String korisnickoIme = "dsubasic";
         String lozinka = "11";
         
-        String query = "DELETE FROM PROIZVOD WHERE Sifra_proizvoda = ?";
+        String brisanjeQuery = "DELETE FROM PROIZVOD WHERE Sifra_proizvoda = ?";
         
         try (Connection connection = DriverManager.getConnection(url, korisnickoIme, lozinka);
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement brisanjeStmt = connection.prepareStatement(brisanjeQuery)) {
             
-            preparedStatement.setString(1, sifraProizvoda);
-            int rowsDeleted = preparedStatement.executeUpdate();
+            brisanjeStmt.setString(1, sifraProizvoda);
+            int rowsDeleted = brisanjeStmt.executeUpdate();
             
             if (rowsDeleted > 0) {
-                System.out.println("Proizvod uspješno storniran.");
+                JOptionPane.showMessageDialog(this, "Proizvod uspješno storniran.", "Uspjeh", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                System.out.println("Storniranje proizvoda nije uspjelo. Provjerite šifru proizvoda.");
+                JOptionPane.showMessageDialog(this, "Storniranje proizvoda nije uspjelo. Provjerite šifru proizvoda.", "Greška", JOptionPane.ERROR_MESSAGE);
             }
             
         } catch (SQLException ex) {
             ex.printStackTrace();
-            System.out.println("Greška pri radu s bazom podataka: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Greška pri radu s bazom podataka: " + ex.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

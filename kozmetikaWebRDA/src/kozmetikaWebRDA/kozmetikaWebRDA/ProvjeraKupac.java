@@ -1,4 +1,5 @@
 package src.kozmetikaWebRDA.kozmetikaWebRDA;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import javax.swing.JButton;
@@ -8,13 +9,15 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Font;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StornoKupca extends JDialog {
+public class ProvjeraKupac extends JDialog {
 
     private static final long serialVersionUID = 1L;
     private final JPanel contentPanel = new JPanel();
@@ -36,7 +39,7 @@ public class StornoKupca extends JDialog {
     /**
      * Create the dialog.
      */
-    public StornoKupca() {
+    public ProvjeraKupac() {
         setBounds(100, 100, 450, 200);
         getContentPane().setLayout(new BorderLayout());
         contentPanel.setBackground(new Color(128, 255, 255));
@@ -68,10 +71,8 @@ public class StornoKupca extends JDialog {
             String sifraKupca = textField.getText();
             if (!sifraKupca.isEmpty()) {
                 stornirajKupca(sifraKupca);
-                dispose();
             } else {
-                
-                System.out.println("Molimo unesite šifru kupca.");
+                JOptionPane.showMessageDialog(this, "Molimo unesite šifru kupca.", "Greška", JOptionPane.ERROR_MESSAGE);
             }
         });
         okButton.setActionCommand("OK");
@@ -82,32 +83,46 @@ public class StornoKupca extends JDialog {
         cancelButton.setActionCommand("Cancel");
         buttonPane.add(cancelButton);
         cancelButton.addActionListener(e -> dispose());
-
     }
     
     private void stornirajKupca(String sifraKupca) {
         String url = "jdbc:mysql://ucka.veleri.hr:3306/dsubasic";
         String korisnickoIme = "dsubasic";
         String lozinka = "11";
+
+        String provjeraQuery = "SELECT 1 FROM NARUDZBA WHERE Sifra_kupca = ?";
+        String brisanjeQuery = "DELETE FROM KUPAC WHERE Sifra_kupca = ?";
         
-        String query = "DELETE FROM KUPAC WHERE Sifra_kupca = ?";
-        
-        try (Connection connection = DriverManager.getConnection(url, korisnickoIme, lozinka);
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            
-            preparedStatement.setString(1, sifraKupca);
-            int rowsDeleted = preparedStatement.executeUpdate();
-            
-            if (rowsDeleted > 0) {
-                System.out.println("Kupac uspješno storniran.");
-            } else {
-                System.out.println("Storniranje kupca nije uspjelo. Provjerite šifru kupca.");
+        try (Connection connection = DriverManager.getConnection(url, korisnickoIme, lozinka)) {
+            connection.setAutoCommit(false); 
+
+            try (PreparedStatement provjeraStmt = connection.prepareStatement(provjeraQuery)) {
+                provjeraStmt.setString(1, sifraKupca);
+                ResultSet resultSet = provjeraStmt.executeQuery();
+                
+                if (resultSet.next()) {
+                    JOptionPane.showMessageDialog(this, "Kupca nije moguće obrisati jer postoje povezane narudžbe.", "Greška", JOptionPane.ERROR_MESSAGE);
+                    connection.rollback(); 
+                    return;
+                }
             }
-            
+
+            try (PreparedStatement brisanjeStmt = connection.prepareStatement(brisanjeQuery)) {
+                brisanjeStmt.setString(1, sifraKupca);
+                int rowsDeleted = brisanjeStmt.executeUpdate();
+                
+                if (rowsDeleted > 0) {
+                    JOptionPane.showMessageDialog(this, "Kupac uspješno storniran.", "Uspjeh", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Storniranje kupca nije uspjelo. Provjerite šifru kupca.", "Greška", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+            connection.commit(); 
+
         } catch (SQLException ex) {
             ex.printStackTrace();
-            System.out.println("Greška pri radu s bazom podataka: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Greška pri radu s bazom podataka: " + ex.getMessage(), "Greška", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
-
