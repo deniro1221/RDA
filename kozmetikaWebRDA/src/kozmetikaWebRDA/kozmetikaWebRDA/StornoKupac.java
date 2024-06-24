@@ -1,4 +1,4 @@
-package kozmetikaWebRDA.kozmetikaWebRDA;
+package src.kozmetikaWebRDA.kozmetikaWebRDA;
 
 import java.awt.EventQueue;
 

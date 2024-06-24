@@ -124,7 +124,7 @@ public class PrilagodiAzuriranje extends JDialog {
 
         String updateQuery = "";
         
-        // Provjera imena tablice uz case-insensitive usporedbu
+        
         if (tablica.equalsIgnoreCase("KUPAC")) {
             updateQuery = "UPDATE KUPAC SET " + stupac + " = ? WHERE Sifra_kupca = ?";
         } else if (tablica.equalsIgnoreCase("PROIZVOD")) {
