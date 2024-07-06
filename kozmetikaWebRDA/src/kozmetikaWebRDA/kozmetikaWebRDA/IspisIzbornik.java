@@ -78,7 +78,7 @@ public class IspisIzbornik extends JDialog {
 			}
 		});
 		btnNarudba.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnNarudba.setBounds(34, 127, 106, 21);
+		btnNarudba.setBounds(34, 101, 106, 21);
 		contentPanel.add(btnNarudba);
 		
 		JButton btnProizvod = new JButton("PROIZVOD");
@@ -89,7 +89,7 @@ public class IspisIzbornik extends JDialog {
 			}
 		});
 		btnProizvod.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnProizvod.setBounds(242, 128, 98, 21);
+		btnProizvod.setBounds(244, 102, 98, 21);
 		contentPanel.add(btnProizvod);
 		
 		JButton btnIzlaz = new JButton("IZLAZ");
@@ -99,6 +99,18 @@ public class IspisIzbornik extends JDialog {
 	    btnIzlaz.addActionListener(e -> dispose());
 
 		contentPanel.add(btnIzlaz);
+		
+		JButton btnIspiiRaun = new JButton("PRILAGODI ISPIS");
+		btnIspiiRaun.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PrilagodiIspis dlg=new PrilagodiIspis();
+				dlg.setVisible(true);
+			}
+		});
+		btnIspiiRaun.setBackground(new Color(255, 128, 255));
+		btnIspiiRaun.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		btnIspiiRaun.setBounds(128, 133, 146, 21);
+		contentPanel.add(btnIspiiRaun);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));

@@ -26,6 +26,11 @@ public class UnosKupac extends JDialog {
     private JTextField textField_2;
     private JTextField textField_3;
     private JTextField textField_4;
+    private String sifraKupca;
+    private String imeKupca;
+    private String prezimeKupca;
+    private String adresaKupca;
+    private String emailKupca;
 
     /**
      * Launch the application.
@@ -113,11 +118,11 @@ public class UnosKupac extends JDialog {
             JButton okButton = new JButton("OK");
             okButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    String sifraKupca = textField.getText();
-                    String imeKupca = textField_1.getText();
-                    String prezimeKupca = textField_2.getText();
-                    String adresaKupca = textField_3.getText();
-                    String emailKupca = textField_4.getText();
+                    sifraKupca = textField.getText();
+                    imeKupca = textField_1.getText();
+                    prezimeKupca = textField_2.getText();
+                    adresaKupca = textField_3.getText();
+                    emailKupca = textField_4.getText();
 
                     if (sifraKupca.isEmpty() || imeKupca.isEmpty() || prezimeKupca.isEmpty() || adresaKupca.isEmpty() || emailKupca.isEmpty()) {
                         JOptionPane.showMessageDialog(null, "Sva polja moraju biti popunjena.", "Greška", JOptionPane.ERROR_MESSAGE);
@@ -169,3 +174,4 @@ public class UnosKupac extends JDialog {
         }
     }
 }
+

@@ -104,5 +104,25 @@ public class StornoIzbornik extends JFrame {
 		btnNewButton_4.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnNewButton_4.setBounds(153, 232, 85, 21);
 		contentPane.add(btnNewButton_4);
+		
+		JButton btnNewButton_5 = new JButton("Provjera Kupca");
+		btnNewButton_5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ProvjeraKupac dlg = new ProvjeraKupac();
+				dlg.setVisible(true);
+			}
+		});
+		btnNewButton_5.setBounds(129, 178, 135, 23);
+		contentPane.add(btnNewButton_5);
+		
+		JButton btnNewButton_6 = new JButton("Provjera Proizvoda");
+		btnNewButton_6.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ProvjeraProizvod dlg = new ProvjeraProizvod();
+				dlg.setVisible(true);
+			}
+		});
+		btnNewButton_6.setBounds(103, 65, 173, 23);
+		contentPane.add(btnNewButton_6);
 	}
 }

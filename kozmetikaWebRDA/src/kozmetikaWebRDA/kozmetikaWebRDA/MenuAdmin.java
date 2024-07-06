@@ -108,6 +108,18 @@ public class MenuAdmin extends JDialog {
 		btnApi.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnApi.setBounds(133, 179, 119, 30);
 		contentPanel.add(btnApi);
+		
+		JButton btnProvjera = new JButton("PROVJERA");
+		btnProvjera.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ProvjeraIzbornik dlg = new ProvjeraIzbornik ();
+				dlg.setVisible(true);
+			}
+		});
+		btnProvjera.setBackground(new Color(255, 128, 255));
+		btnProvjera.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		btnProvjera.setBounds(285, 179, 119, 30);
+		contentPanel.add(btnProvjera);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
